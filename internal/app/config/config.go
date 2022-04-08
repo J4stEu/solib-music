@@ -1,4 +1,4 @@
-package app
+package config
 
 import (
 	"github.com/J4stEu/solib/internal/pkg"
@@ -7,21 +7,27 @@ import (
 	"strconv"
 )
 
-// Config - application configuration
-type Config struct {
-	// Server configuration
+// Server - server configuration
+type Server struct {
 	ServerAddr string
 	ServerPort uint
+	// Logging
+	LogLevel string
+}
 
-	// Database Configuration
+// DataBase - database configuration
+type DataBase struct {
 	PostgresIP   string
 	PostgresPort uint
 	PostgresDB   string
 	PostgresUser string
 	PostgresPass string
+}
 
-	// Logging
-	LogLevel string
+// Config - application configuration
+type Config struct {
+	Server   *Server
+	DataBase *DataBase
 }
 
 func CheckENV() bool {
@@ -65,7 +71,7 @@ func CheckENV() bool {
 }
 
 func ReadConfiguration(logger *logrus.Logger) *Config {
-	config := &Config{}
+	config := &Config{&Server{}, &DataBase{}}
 	// Server configuration
 	// ServerAddr
 	serverAddr, err := os.LookupEnv("SERVER_ADDR")
@@ -77,7 +83,7 @@ func ReadConfiguration(logger *logrus.Logger) *Config {
 		logger.Fatal("Invalid server IP address.")
 	}
 	// ServerPort
-	config.ServerAddr = serverAddr
+	config.Server.ServerAddr = serverAddr
 	serverPort, err := os.LookupEnv("SERVER_PORT")
 	if !err {
 		logger.Fatal(err)
@@ -86,7 +92,13 @@ func ReadConfiguration(logger *logrus.Logger) *Config {
 	if convertErr != nil {
 		logger.Fatal(convertErr)
 	}
-	config.ServerPort = uint(serverPortUINT)
+	config.Server.ServerPort = uint(serverPortUINT)
+	// LogLevel
+	logLevel, err := os.LookupEnv("LOG_LEVEL")
+	if !err {
+		logger.Fatal(err)
+	}
+	config.Server.LogLevel = logLevel
 
 	// Database Configuration
 	// PostgresIP
@@ -98,7 +110,7 @@ func ReadConfiguration(logger *logrus.Logger) *Config {
 	if !validPostgresIP {
 		logger.Fatal("Invalid postgres IP address.")
 	}
-	config.PostgresIP = postgresIP
+	config.DataBase.PostgresIP = postgresIP
 	// PostgresPort
 	postgresPort, err := os.LookupEnv("PG_PORT")
 	if !err {
@@ -108,30 +120,41 @@ func ReadConfiguration(logger *logrus.Logger) *Config {
 	if convertErr != nil {
 		logger.Fatal(convertErr)
 	}
-	config.PostgresPort = uint(postgresPortUINT)
+	config.DataBase.PostgresPort = uint(postgresPortUINT)
 	// PostgresDB
 	postgresDB, err := os.LookupEnv("PG_DATABASE")
 	if !err {
 		logger.Fatal(err)
 	}
-	config.PostgresDB = postgresDB
+	config.DataBase.PostgresDB = postgresDB
 	// PostgresUser
 	postgresUser, err := os.LookupEnv("PG_USER")
 	if !err {
 		logger.Fatal(err)
 	}
-	config.PostgresUser = postgresUser
+	config.DataBase.PostgresUser = postgresUser
 	// PostgresPass
 	postgresPass, err := os.LookupEnv("PG_PASSWORD")
 	if !err {
 		logger.Fatal(err)
 	}
-	config.PostgresPass = postgresPass
-	// LogLevel
-	logLevel, err := os.LookupEnv("LOG_LEVEL")
-	if !err {
-		logger.Fatal(err)
-	}
-	config.LogLevel = logLevel
+	config.DataBase.PostgresPass = postgresPass
 	return config
+}
+
+func DefaultConfiguration() *Config {
+	return &Config{
+		Server: &Server{
+			ServerAddr: "localhost",
+			ServerPort: 8080,
+			LogLevel:   "debug",
+		},
+		DataBase: &DataBase{
+			PostgresIP:   "localhost",
+			PostgresPort: 5432,
+			PostgresDB:   "solib",
+			PostgresUser: "postgres",
+			PostgresPass: "postgres",
+		},
+	}
 }

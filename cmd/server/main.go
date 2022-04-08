@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/J4stEu/solib/internal/app"
+	"github.com/J4stEu/solib/internal/app/config"
+	"github.com/J4stEu/solib/internal/app/server"
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -18,15 +19,13 @@ func init() {
 			logger.Fatal("Error loading dev.env file.")
 		}
 	}
-	if !app.CheckENV() {
+	if !config.CheckENV() {
 		logger.Fatal("Error setting environment.")
 	}
 }
 
 func main() {
-	config := app.ReadConfiguration(logger)
-	application := app.New(config, logger)
-	application.ConfigureLogger()
+	application := server.New(config.ReadConfiguration(logger), logger)
 	if err := application.Start(); err != nil {
 		log.Fatal(err)
 	}
