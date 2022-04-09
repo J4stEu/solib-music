@@ -12,7 +12,7 @@ func (srv *Server) ConfigureRouter() {
 	srv.router.HandleFunc("/", srv.HandleRoot())
 }
 
-// HandleRoot - root api
+// HandleRoot - root api_errors
 func (srv *Server) HandleRoot() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		srv.logger.Debug(fmt.Sprintf("%s: %s:%s%s", request.Method, srv.config.Server.ServerAddr, strconv.Itoa(int(srv.config.Server.ServerPort)), request.RequestURI))

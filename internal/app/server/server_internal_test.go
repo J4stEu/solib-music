@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-// TestApp_HandleRoot - test server root endpoint
+// TestApp_HandleRoot - test server_errors root endpoint
 func TestApp_HandleRoot(t *testing.T) {
 	app := New(config.DefaultConfiguration(), logrus.New())
 	rec := httptest.NewRecorder()

@@ -1,13 +1,16 @@
 package config
 
 import (
+	"github.com/J4stEu/solib/internal/app/errors"
+	"github.com/J4stEu/solib/internal/app/errors/server_errors"
 	"github.com/J4stEu/solib/internal/pkg"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"strconv"
 )
 
-// Server - server configuration
+// Server - server_errors configuration
 type Server struct {
 	ServerAddr string
 	ServerPort uint
@@ -76,27 +79,31 @@ func ReadConfiguration(logger *logrus.Logger) *Config {
 	// ServerAddr
 	serverAddr, err := os.LookupEnv("SERVER_ADDR")
 	if !err {
-		logger.Fatal(err)
+		logger.Fatal(errors.ServerErrorLevel, server_errors.EnvReadError)
 	}
 	validServerAddr := pkg.IsValidIP(serverAddr)
 	if !validServerAddr {
-		logger.Fatal("Invalid server IP address.")
+		logger.WithFields(log.Fields{
+			"error": "Invalid server IP address.",
+		}).Fatal(errors.SetError(errors.ServerErrorLevel, server_errors.EnvSetError))
 	}
 	// ServerPort
 	config.Server.ServerAddr = serverAddr
 	serverPort, err := os.LookupEnv("SERVER_PORT")
 	if !err {
-		logger.Fatal(err)
+		logger.Fatal(errors.ServerErrorLevel, server_errors.EnvReadError)
 	}
 	serverPortUINT, convertErr := strconv.Atoi(serverPort)
 	if convertErr != nil {
-		logger.Fatal(convertErr)
+		logger.WithFields(log.Fields{
+			"error": convertErr,
+		}).Fatal(errors.SetError(errors.ServerErrorLevel, server_errors.EnvSetError))
 	}
 	config.Server.ServerPort = uint(serverPortUINT)
 	// LogLevel
 	logLevel, err := os.LookupEnv("LOG_LEVEL")
 	if !err {
-		logger.Fatal(err)
+		logger.Fatal(errors.ServerErrorLevel, server_errors.EnvReadError)
 	}
 	config.Server.LogLevel = logLevel
 
@@ -104,39 +111,43 @@ func ReadConfiguration(logger *logrus.Logger) *Config {
 	// PostgresIP
 	postgresIP, err := os.LookupEnv("PG_IP")
 	if !err {
-		logger.Fatal(err)
+		logger.Fatal(errors.ServerErrorLevel, server_errors.EnvReadError)
 	}
 	validPostgresIP := pkg.IsValidIP(postgresIP)
 	if !validPostgresIP {
-		logger.Fatal("Invalid postgres IP address.")
+		logger.WithFields(log.Fields{
+			"error": "Invalid postgres IP address.",
+		}).Fatal(errors.SetError(errors.ServerErrorLevel, server_errors.EnvSetError))
 	}
 	config.DataBase.PostgresIP = postgresIP
 	// PostgresPort
 	postgresPort, err := os.LookupEnv("PG_PORT")
 	if !err {
-		logger.Fatal(err)
+		logger.Fatal(errors.ServerErrorLevel, server_errors.EnvReadError)
 	}
 	postgresPortUINT, convertErr := strconv.Atoi(postgresPort)
 	if convertErr != nil {
-		logger.Fatal(convertErr)
+		logger.WithFields(log.Fields{
+			"error": convertErr,
+		}).Fatal(errors.SetError(errors.ServerErrorLevel, server_errors.EnvSetError))
 	}
 	config.DataBase.PostgresPort = uint(postgresPortUINT)
 	// PostgresDB
 	postgresDB, err := os.LookupEnv("PG_DATABASE")
 	if !err {
-		logger.Fatal(err)
+		logger.Fatal(errors.ServerErrorLevel, server_errors.EnvReadError)
 	}
 	config.DataBase.PostgresDB = postgresDB
 	// PostgresUser
 	postgresUser, err := os.LookupEnv("PG_USER")
 	if !err {
-		logger.Fatal(err)
+		logger.Fatal(errors.ServerErrorLevel, server_errors.EnvReadError)
 	}
 	config.DataBase.PostgresUser = postgresUser
 	// PostgresPass
 	postgresPass, err := os.LookupEnv("PG_PASSWORD")
 	if !err {
-		logger.Fatal(err)
+		logger.Fatal(errors.ServerErrorLevel, server_errors.EnvReadError)
 	}
 	config.DataBase.PostgresPass = postgresPass
 	return config

@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-// Server - server structure
+// Server - server_errors structure
 type Server struct {
 	config *config.Config
 	logger *logrus.Logger
@@ -18,7 +18,7 @@ type Server struct {
 	store  *store.Store
 }
 
-// New - new server instance
+// New - new server_errors instance
 func New(config *config.Config, logger *logrus.Logger) *Server {
 	return &Server{
 		config: config,
@@ -27,7 +27,7 @@ func New(config *config.Config, logger *logrus.Logger) *Server {
 	}
 }
 
-// Start - start server instance
+// Start - start server_errors instance
 func (srv *Server) Start() error {
 	srv.ConfigureLogger()
 	srv.ConfigureRouter()
