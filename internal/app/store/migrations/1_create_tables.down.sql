@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS music;
+DROP TABLE IF EXISTS albums;
+DROP TABLE IF EXISTS music_types;

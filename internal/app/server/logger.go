@@ -1,9 +1,14 @@
 package server
 
-import "github.com/sirupsen/logrus"
+import (
+	"github.com/J4stEu/solib/internal/app/errors"
+	"github.com/J4stEu/solib/internal/app/errors/server_errors"
+	"github.com/sirupsen/logrus"
+)
 
 // ConfigureLogger - logger configuration
-func (srv *Server) ConfigureLogger() {
+func (srv *Server) ConfigureLogger() error {
+	srv.logger.Info("Configuring logger...")
 	var logLevel logrus.Level
 	switch srv.config.Server.LogLevel {
 	case "debug":
@@ -17,7 +22,8 @@ func (srv *Server) ConfigureLogger() {
 	case "fatal":
 		logLevel = logrus.FatalLevel
 	default:
-		srv.logger.Fatal("Error setting logger format.")
+		return errors.SetError(errors.ServerErrorLevel, server_errors.LoggerLevelError, nil)
 	}
 	srv.logger.SetLevel(logLevel)
+	return nil
 }
